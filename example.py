@@ -3,13 +3,14 @@ from socialsent import lexicons
 from socialsent.polarity_induction_methods import random_walk
 from socialsent.evaluate_methods import binary_metrics
 from socialsent.representations.representation_factory import create_representation
+import json
 
 if __name__ == "__main__":
     print("Evaluting SentProp with 100 dimensional GloVe embeddings")
     print("Evaluting only binary classification performance on General Inquirer lexicon")
     lexicon = lexicons.load_lexicon("inquirer", remove_neutral=True)
     pos_seeds, neg_seeds = seeds.hist_seeds()
-    embeddings = create_representation("GIGA", "data/example_embeddings/glove.6B.100d.txt",
+    embeddings = create_representation("SVD", "example_embeddings/glove.6B.100d.txt",
         set(lexicon.keys()).union(pos_seeds).union(neg_seeds))
     eval_words = [word for word in embeddings.iw
             if not word in pos_seeds 
@@ -17,9 +18,20 @@ if __name__ == "__main__":
     # Using SentProp with 10 neighbors and beta=0.99
     polarities = random_walk(embeddings, pos_seeds, neg_seeds, beta=0.99, nn=10,
             sym=True, arccos=True)
+    print(polarities)
 
-    acc, auc, avg_per  = binary_metrics(polarities, lexicon, eval_words)
-    print("Accuracy with best threshold: {:0.2f}".format(acc))
-    print("ROC AUC: {:0.2f}".format(auc))
-    print("Average precision score: {:0.2f}".format(avg_per))
+    sort = sorted([(k, v) for k, v in polarities.items()], key = lambda x: x[1])
+
+
+    with open('sortedpolarities.json', 'w') as file:
+        for line in sort:
+            file.write("{} : {} \n".format(line[0], line[1]))
+    with open('outputpolarities.json', 'w') as file:
+        file.write(json.dumps(polarities))
+
+
+    #acc, auc, avg_per  = binary_metrics(polarities, lexicon, eval_words)
+    #print("Accuracy with best threshold: {:0.2f}".format(acc))
+    #print("ROC AUC: {:0.2f}".format(auc))
+    #print("Average precision score: {:0.2f}".format(avg_per))
 

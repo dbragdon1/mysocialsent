@@ -69,7 +69,7 @@ def make_qwn_lexicon():
         for word in info[2].split(", "):
             if not "_" in word:
                 polarities[word.split("#")[0]] += mod
-    polarities = {word:np.sign(val) for word, val in polarities.iteritems() if val != 0}
+    polarities = {word:np.sign(val) for word, val in polarities.items() if val != 0}
     util.write_json(polarities, constants.PROCESSED_LEXICONS + 'qwn.json')
 
 
@@ -116,7 +116,7 @@ def make_concreteness_lexicon(top=75, bottom=25):
     neg_thresh = np.percentile(raw_scores.values(), bottom)
     polarities = {}
     label_func = lambda s : 1 if s > pos_thresh else -1 if s < neg_thresh else 0
-    for word, score in raw_scores.iteritems():
+    for word, score in raw_scores.items():
         polarities[word] = label_func(score)
     util.write_json(polarities, constants.PROCESSED_LEXICONS + "concreteness.json")
      
@@ -162,7 +162,7 @@ def make_inquirer_lexicon():
 
 def load_lexicon(name=constants.LEXICON, remove_neutral=True):
     lexicon = util.load_json(constants.PROCESSED_LEXICONS + name + '.json')
-    return {w: p for w, p in lexicon.iteritems() if p != 0} if remove_neutral else lexicon
+    return {w: p for w, p in lexicon.items() if p != 0} if remove_neutral else lexicon
 
 def compare_lexicons(print_disagreements=False):
     lexicons = {

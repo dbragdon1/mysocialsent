@@ -46,8 +46,8 @@ def write_json(d, fname):
         f.write(json.dumps(d))
 
 
-def lines(fname):
-    with open(fname) as f:
+def lines(fname, encoding):
+    with open(fname, encoding = encoding) as f:
         for line in f:
             yield line
 
